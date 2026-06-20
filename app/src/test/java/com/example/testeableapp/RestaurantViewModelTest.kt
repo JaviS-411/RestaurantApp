@@ -116,4 +116,36 @@ class RestaurantViewModelTest {
         assertTrue(viewModel.quantities.value.isEmpty())
         assertTrue(viewModel.isEmpty.value)
     }
+
+    @Test
+    fun addingSameItemMultipleTimesIncrementsQuantity() {
+        val itemId = MenuData.items[0].id
+
+        viewModel.addItem(itemId)
+        viewModel.addItem(itemId)
+        viewModel.addItem(itemId)
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(3, viewModel.quantities.value[itemId])
+    }
+
+    @Test
+    fun totalResetsToZeroWhenAllItemsRemoved() {
+        val item = MenuData.items[0]
+
+        viewModel.addItem(item.id)
+        viewModel.incrementItem(item.id)
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        viewModel.decrementItem(item.id)
+        viewModel.decrementItem(item.id)
+
+        testDispatcher.scheduler.advanceUntilIdle()
+
+        assertEquals(0.0, viewModel.total.value, 0.01)
+    }
+
+
 }
